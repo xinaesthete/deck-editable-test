@@ -1,35 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import DeckGL from 'deck.gl';
+import {
+  EditableGeoJsonLayer,
+  DrawLineStringMode,
+  DrawPolygonMode,
+  type FeatureCollection
+} from '@deck.gl-community/editable-layers';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import StaticMap from 'react-map-gl';
 
-function App() {
-  const [count, setCount] = useState(0)
+const INITIAL_VIEW_STATE = {
+  longitude: -122.41669,
+  latitude: 37.7853,
+  zoom: 13,
+  pitch: 0,
+  bearing: 0
+};
+
+const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
+type DrawModes = DrawPolygonMode | DrawLineStringMode;
+class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
+  static componentName = "PatchEditableGeoJsonLayer";
+  getCursor({ isDragging }: { isDragging: boolean }) {
+    return super.getCursor({ isDragging }) || 'grab'; //nb, somewhat forced by supertype not to use a different string
+  }
+}
+
+
+export default function GeometryEditor() {
+  const [features, setFeatures] = useState<FeatureCollection>({
+    type: 'FeatureCollection',
+    features: []
+  });
+  const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonMode());
+  const [selectedFeatureIndexes] = useState([]);
+
+  const layer = new PatchEditableGeoJsonLayer({
+    data: features,
+    mode,
+    selectedFeatureIndexes,
+    onEdit: ({ updatedData }) => {
+      setFeatures(updatedData);
+    }
+  });
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <DeckGL
+        initialViewState={INITIAL_VIEW_STATE}
+        controller={{
+          doubleClickZoom: false
+        }}
+        layers={[layer]}
+        getCursor={layer.getCursor.bind(layer)}
+      >
+        <StaticMap 
+        // accessToken={accessToken}
+        mapboxAccessToken={accessToken}
+        collectResourceTiming={false}
+      />
+      </DeckGL>
 
-export default App
+      <div className='controls'>
+        <button
+          className={`button ${mode instanceof DrawLineStringMode ? 'active' : ''}`}
+          onClick={() => setMode(() => new DrawLineStringMode())}
+        >
+          Line
+        </button>
+        <button
+          className={`button ${mode instanceof DrawPolygonMode ? 'active' : ''}`}
+          onClick={() => setMode(() => new DrawPolygonMode())}
+        >
+          Polygon
+        </button>
+      </div>
+    </>
+  );
+}
