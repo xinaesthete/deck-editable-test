@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import DeckGL from 'deck.gl';
 import {
   EditableGeoJsonLayer,
@@ -44,6 +44,12 @@ export default function GeometryEditor() {
       setFeatures(updatedData);
     }
   });
+  const controlStyle = useMemo(() => ({
+    zIndex: 1,
+    position: 'absolute',
+    top: '1em',
+    right: '1em',
+  } as CSSProperties), []);
 
   return (
     <>
@@ -62,7 +68,7 @@ export default function GeometryEditor() {
       />
       </DeckGL>
 
-      <div className='controls'>
+      <div className='controls' style={controlStyle}>
         <button
           className={`button ${mode instanceof DrawLineStringMode ? 'active' : ''}`}
           onClick={() => setMode(() => new DrawLineStringMode())}
