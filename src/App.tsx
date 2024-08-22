@@ -47,7 +47,12 @@ export default function GeometryEditor() {
     },
     onHover(pickingInfo) {
       // we get a lot of warnings about 'selectedFeatureIndexes out of range' - why?
+      // because when we hover over a point, the index is a value that relates to points within the feature
+      // the only indices that are valid are those that relate to the features themselves...
+      // also, the type of pickingInfo doesn't have a featureType property, so we cast it to any for now
+      if ((pickingInfo as any).featureType === 'points') return;
       setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
+      // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
     getFillColor: () => [0, 100, 100, 128],
   });
