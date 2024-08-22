@@ -6,6 +6,9 @@ import {
   DrawPolygonMode,
   DrawPolygonByDraggingMode,
   ModifyMode,
+  TransformMode,
+  // TranslateMode,
+  CompositeMode,
   type FeatureCollection
 } from '@deck.gl-community/editable-layers';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -21,7 +24,7 @@ const INITIAL_VIEW_STATE = {
 
 const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode | ModifyMode;
+type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode | CompositeMode;
 class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   static componentName = "PatchEditableGeoJsonLayer";
   getCursor({ isDragging }: { isDragging: boolean }) {
@@ -51,6 +54,9 @@ export default function GeometryEditor() {
       // the only indices that are valid are those that relate to the features themselves...
       // also, the type of pickingInfo doesn't have a featureType property, so we cast it to any for now
       if ((pickingInfo as any).featureType === 'points') return;
+      // this logic is still not perfect in that if two objects overlap and we try to move the mouse from one to the other, 
+      // the first one will not remain selected so the point we were aiming for will disappear... 
+      // we could maybe fix this by only updating the selectedFeatureIndexes when we go out of the bounds of the current feature?
       setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
       // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
@@ -100,8 +106,11 @@ export default function GeometryEditor() {
           Lasso
         </button>
         <button
-          className={`button ${mode instanceof ModifyMode ? 'active' : ''}`}
-          onClick={() => setMode(() => new ModifyMode())}
+          className={`button ${mode instanceof CompositeMode ? 'active' : ''}`}
+          onClick={() => setMode(() => new CompositeMode([
+            new TransformMode(),
+            new ModifyMode(), 
+          ]))}
         >
           Edit
         </button>
