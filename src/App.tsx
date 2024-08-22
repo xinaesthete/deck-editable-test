@@ -5,6 +5,7 @@ import {
   DrawLineStringMode,
   DrawPolygonMode,
   DrawPolygonByDraggingMode,
+  ModifyMode,
   type FeatureCollection
 } from '@deck.gl-community/editable-layers';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -20,7 +21,7 @@ const INITIAL_VIEW_STATE = {
 
 const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode;
+type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode | ModifyMode;
 class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   static componentName = "PatchEditableGeoJsonLayer";
   getCursor({ isDragging }: { isDragging: boolean }) {
@@ -35,7 +36,7 @@ export default function GeometryEditor() {
     features: []
   });
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonMode());
-  const [selectedFeatureIndexes] = useState([]);
+  const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
 
   const layer = new PatchEditableGeoJsonLayer({
     data: features,
@@ -43,7 +44,12 @@ export default function GeometryEditor() {
     selectedFeatureIndexes,
     onEdit: ({ updatedData }) => {
       setFeatures(updatedData);
-    }
+    },
+    onHover(pickingInfo) {
+      // we get a lot of warnings about 'selectedFeatureIndexes out of range' - why?
+      setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
+    },
+    getFillColor: () => [0, 100, 100, 128],
   });
   const controlStyle = useMemo(() => ({
     zIndex: 1,
@@ -87,6 +93,12 @@ export default function GeometryEditor() {
           onClick={() => setMode(() => new DrawPolygonByDraggingMode())}
         >
           Lasso
+        </button>
+        <button
+          className={`button ${mode instanceof ModifyMode ? 'active' : ''}`}
+          onClick={() => setMode(() => new ModifyMode())}
+        >
+          Edit
         </button>
       </div>
     </>
