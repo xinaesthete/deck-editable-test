@@ -4,6 +4,7 @@ import {
   EditableGeoJsonLayer,
   DrawLineStringMode,
   DrawPolygonMode,
+  DrawPolygonByDraggingMode,
   type FeatureCollection
 } from '@deck.gl-community/editable-layers';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -19,7 +20,7 @@ const INITIAL_VIEW_STATE = {
 
 const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-type DrawModes = DrawPolygonMode | DrawLineStringMode;
+type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode;
 class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   static componentName = "PatchEditableGeoJsonLayer";
   getCursor({ isDragging }: { isDragging: boolean }) {
@@ -50,7 +51,7 @@ export default function GeometryEditor() {
     top: '1em',
     right: '1em',
   } as CSSProperties), []);
-
+  const drawPoly = mode instanceof DrawPolygonMode && !(mode instanceof DrawPolygonByDraggingMode);
   return (
     <>
       <DeckGL
@@ -76,10 +77,16 @@ export default function GeometryEditor() {
           Line
         </button>
         <button
-          className={`button ${mode instanceof DrawPolygonMode ? 'active' : ''}`}
+          className={`button ${drawPoly ? 'active' : ''}`}
           onClick={() => setMode(() => new DrawPolygonMode())}
         >
           Polygon
+        </button>
+        <button
+          className={`button ${mode instanceof DrawPolygonByDraggingMode ? 'active' : ''}`}
+          onClick={() => setMode(() => new DrawPolygonByDraggingMode())}
+        >
+          Lasso
         </button>
       </div>
     </>
