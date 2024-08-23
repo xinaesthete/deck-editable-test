@@ -12,7 +12,7 @@ import {
   type FeatureCollection,
   // type Feature //different Feature to the one in FeatureCollection???
 } from '@deck.gl-community/editable-layers';
-import { filterFeatureCollection, filterPoly } from './utils';
+import { aggregateIndices, filterPoly } from './utils';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
 //7.319726 45.738033
@@ -69,6 +69,9 @@ function FeaturePanel({
           }} />
           <button type='button' onClick={() => {
             const newFeatures = features.features.slice();
+            //this can be problematic where we rely on the index of the feature in the array
+            //-- right now, we have a bug here, but not clear why as we rebuild the whole featureDataIndexMap...
+            //-- the only sensible strategy is to have a unique id for each feature and use that as much as possible
             newFeatures.splice(i, 1);
             setFeatures({ ...features, features: newFeatures });
             setSelectedFeatureIndexes([]);
@@ -81,26 +84,13 @@ function FeaturePanel({
 
 
 export default function GeometryEditor() {
-  const [features, setFeaturesX] = useState<FeatureCollection>({
-    type: 'FeatureCollection',
-    features: []
-  });
-  const setFeatures = useCallback((features: FeatureCollection) => {
-    setFeaturesX(features);
-    setSelectedDataIndices(filterFeatureCollection(features, data.x, data.y));
-  }, []);
-  const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
-  const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
-  const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
-
   //35621990 - cells in adenoma dataset
   //806104 - cells in sample 10171
   //447042 - cillian run12
-  const n = .5e6;
-  
+  const n = 1e5;
   const data = useMemo(() => {
     const { longitude, latitude } = INITIAL_VIEW_STATE;
-    const r = () => (2*(Math.random()-0.5))**3;
+    const r = () => (2*(Math.random()-0.5));
     // const p = () => [longitude + r()*0.2, latitude + r()*0.1] as [number, number];
     const x = new Float32Array(n).map(() => longitude + r()*0.2);
     const y = new Float32Array(n).map(() => latitude + r()*0.1);
@@ -109,17 +99,56 @@ export default function GeometryEditor() {
     return { x, y, size, length: n };
   }, [n]);
 
+  const [features, setFeaturesX] = useState<FeatureCollection>({
+    type: 'FeatureCollection',
+    features: []
+  });  
+  const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
+  const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
+  const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
+  const [featureDataIndexMap, setFeatureDataIndexMap] = useState<Map<number, Uint32Array>>(new Map());
+  
+  const setFeatures = useCallback((features: FeatureCollection, updatedIndexes?: number[]) => {
+    setFeaturesX(features);
+    if (updatedIndexes) {
+      const newMap = new Map(featureDataIndexMap);
+      for (const i of updatedIndexes) {
+        const points = features.features[i].geometry.coordinates[0] as [number, number][];
+        const indices = filterPoly(points, data.x, data.y);
+        //XXX i is liable to be different if we've removed features, so we should probably use the feature id instead
+        newMap.set(i, indices);
+      }  
+      const newIndices = aggregateIndices(features, newMap, n);
+      setFeatureDataIndexMap(newMap);
+      setSelectedDataIndices(newIndices);
+    } else {
+      console.warn('No updated indexes provided... doing it the slow way');
+      // setSelectedDataIndices(filterFeatureCollection(features, data.x, data.y));
+      const newMap = new Map();
+      for (let i=0; i<features.features.length; i++) {
+        const points = features.features[i].geometry.coordinates[0] as [number, number][];
+        const indices = filterPoly(points, data.x, data.y);
+        newMap.set(i, indices);
+      }
+      const newIndices = aggregateIndices(features, featureDataIndexMap, n);
+      setSelectedDataIndices(newIndices);
+      setFeatureDataIndexMap(newMap);
+    }
+  }, [n, data.x, data.y, featureDataIndexMap]);  
+
+  
   const layer = new PatchEditableGeoJsonLayer({
     data: features,
     mode,
     selectedFeatureIndexes,
-    onEdit: ({ updatedData }) => {
-      // for (const i in featureIndexes) // lies, this is undefined
+    onEdit: ({ updatedData, editContext, editType }) => {
+      const featureIndexes = editContext.featureIndexes as number[];
+      console.log('onEdit', editType, featureIndexes);
       for (const f of updatedData.features) {
         //would be nice to type our feature properties, even if in a somewhat ad-hoc way
         if (!Object.keys(f.properties).includes('visible')) f.properties.visible = true;
       }
-      setFeatures(updatedData);
+      setFeatures(updatedData, featureIndexes);
     },
     onHover(pickingInfo) {
       if (!(mode instanceof CompositeMode)) return;

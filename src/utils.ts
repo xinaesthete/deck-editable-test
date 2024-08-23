@@ -53,3 +53,20 @@ export function filterFeatureCollection(fc: FeatureCollection, xData: Float32Arr
     }
     return selectedDataIndices.slice(0, count);
 }
+
+export function aggregateIndices(fc: FeatureCollection, featureDataIndexMap: Map<number, Uint32Array>, n: number) {
+    const features = fc.features;//.filter // bad idea - we rely on the indices being in the same order as the features
+    const selectedDataIndices = new Uint32Array(n);
+    let count = 0;
+    for (let i=0; i<features.length; i++) {
+        const feature = features[i];
+        if (feature.geometry.type !== 'Polygon' || feature.properties?.visible === false) continue;
+        const indices = featureDataIndexMap.get(i);
+        if (indices) {
+            for (const index of indices) {
+                selectedDataIndices[count++] = index;
+            }
+        }
+    }
+    return selectedDataIndices.slice(0, count);
+}
