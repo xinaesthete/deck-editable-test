@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useMemo, useState, type CSSProperties, useCallback } from 'react';
 import DeckGL, { ScatterplotLayer } from 'deck.gl';
 import {
   EditableGeoJsonLayer,
@@ -55,10 +55,10 @@ function FeaturePanel({
         onMouseOver={() => setSelectedFeatureIndexes([i])}
         onMouseOut={() => setSelectedFeatureIndexes([])}
         onClick={() => {
-          const points = feature.geometry.coordinates[0] as [number, number][];
-          const t = Date.now();
-          setSelectedDataIndices(filterPoly(points, data.x, data.y));
-          console.log('filterPoly', points.length, Date.now()-t);
+          // const points = feature.geometry.coordinates[0] as [number, number][];
+          // const t = Date.now();
+          // setSelectedDataIndices(filterPoly(points, data.x, data.y));
+          // console.log('filterPoly', points.length, Date.now()-t);
         }}
         >
           {feature.geometry.type}
@@ -81,10 +81,14 @@ function FeaturePanel({
 
 
 export default function GeometryEditor() {
-  const [features, setFeatures] = useState<FeatureCollection>({
+  const [features, setFeaturesX] = useState<FeatureCollection>({
     type: 'FeatureCollection',
     features: []
   });
+  const setFeatures = useCallback((features: FeatureCollection) => {
+    setFeaturesX(features);
+    setSelectedDataIndices(filterFeatureCollection(features, data.x, data.y));
+  }, []);
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
   const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
@@ -114,7 +118,6 @@ export default function GeometryEditor() {
       for (const f of updatedData.features) {
         //would be nice to type our feature properties, even if in a somewhat ad-hoc way
         if (!Object.keys(f.properties).includes('visible')) f.properties.visible = true;
-        setSelectedDataIndices(filterFeatureCollection(updatedData, data.x, data.y));
       }
       setFeatures(updatedData);
     },
