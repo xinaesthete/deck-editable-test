@@ -37,10 +37,13 @@ function FeaturePanel({ features, selectedFeatureIndexes, setSelectedFeatureInde
   { features: FeatureCollection, selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void }) {
   const numFeatures = features.features.length;
   return (
-    <div className='feature-stats'>
+    <div className='feature-panel'>
       <div>Features: {numFeatures}</div>
       {features.features.map((feature, i) => (
-        <div key={feature.id || i} className={selectedFeatureIndexes.includes(i) ? 'active' : ''}>
+        <div key={feature.id || i} className={selectedFeatureIndexes.includes(i) ? 'active' : ''}
+        onMouseOver={() => setSelectedFeatureIndexes([i])}
+        onMouseOut={() => setSelectedFeatureIndexes([])}
+        >
           {feature.geometry.type}
         </div>
       ))}

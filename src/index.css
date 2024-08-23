@@ -77,3 +77,18 @@ button:focus-visible {
 .active {
   border: 1px solid #646cff;
 }
+
+.feature-panel {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 300px;
+  padding: 1em;
+  background-color: #1a1a1a;
+  color: #fff;
+  z-index: 1;
+}
+.feature-panel * {
+  box-sizing: border-box;
+  padding: 0.2em;
+}
