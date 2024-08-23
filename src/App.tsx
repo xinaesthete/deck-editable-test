@@ -33,8 +33,10 @@ class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   }
 }
 
-function FeaturePanel({ features, selectedFeatureIndexes, setSelectedFeatureIndexes }: 
-  { features: FeatureCollection, selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void }) {
+function FeaturePanel({ features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes }: 
+  { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void, 
+    selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void 
+  }) {
   const numFeatures = features.features.length;
   return (
     <div className='feature-panel'>
@@ -45,6 +47,12 @@ function FeaturePanel({ features, selectedFeatureIndexes, setSelectedFeatureInde
         onMouseOut={() => setSelectedFeatureIndexes([])}
         >
           {feature.geometry.type}
+          <button type='button' onClick={() => {
+            const newFeatures = features.features.slice();
+            newFeatures.splice(i, 1);
+            setFeatures({ ...features, features: newFeatures });
+            setSelectedFeatureIndexes([]);
+          }}>x</button>
         </div>
       ))}
     </div>
@@ -79,7 +87,7 @@ export default function GeometryEditor() {
       setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
       // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
-    getFillColor: () => [0, 100, 100, 128],
+    getFillColor: (feature, isSelected) => [isSelected ? 100 : 0, 100, 100, 128],
     onClick(pickingInfo, event) {
       console.log(event.type);
     },
@@ -139,7 +147,7 @@ export default function GeometryEditor() {
         </button>
       </div>
       {/* <FeaturePanel features={features} selectedFeatureIndexes={selectedFeatureIndexes} setSelectedFeatureIndexes={setSelectedFeatureIndexes} /> */}
-      <FeaturePanel {...{features, selectedFeatureIndexes, setSelectedFeatureIndexes}} />
+      <FeaturePanel {...{features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes}} />
     </>
   );
 }

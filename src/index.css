@@ -92,3 +92,6 @@ button:focus-visible {
   box-sizing: border-box;
   padding: 0.2em;
 }
+.feature-panel button {
+  float: right;
+}
