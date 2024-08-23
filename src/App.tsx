@@ -1,5 +1,5 @@
 import { useMemo, useState, type CSSProperties } from 'react';
-import DeckGL from 'deck.gl';
+import DeckGL, { ScatterplotLayer } from 'deck.gl';
 import {
   EditableGeoJsonLayer,
   DrawLineStringMode,
@@ -14,10 +14,10 @@ import {
 } from '@deck.gl-community/editable-layers';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
-
+//7.319726 45.738033
 const INITIAL_VIEW_STATE = {
-  longitude: -122.41669,
-  latitude: 37.7853,
+  longitude: 7.319726,
+  latitude: 45.738033,
   zoom: 13,
   pitch: 0,
   bearing: 0
@@ -73,6 +73,12 @@ export default function GeometryEditor() {
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
 
+  const data = useMemo(() => {
+    const { longitude, latitude } = INITIAL_VIEW_STATE;
+    const p = () => [longitude + Math.random()*0.5 - 0.25, latitude + Math.random()*0.5 - 0.25];
+    return new Array(1e6).fill(0).map(() => ({ position: p(), size: 5+Math.random()*10 }));
+  }, []);
+
   const layer = new PatchEditableGeoJsonLayer({
     data: features,
     mode,
@@ -80,6 +86,7 @@ export default function GeometryEditor() {
     onEdit: ({ updatedData }) => {
       // for (const i in featureIndexes) // lies, this is undefined
       for (const f of updatedData.features) {
+        //would be nice to type our feature properties, even if in a somewhat ad-hoc way
         if (!Object.keys(f.properties).includes('visible')) f.properties.visible = true;
       }
       setFeatures(updatedData);
@@ -91,18 +98,35 @@ export default function GeometryEditor() {
       // the only indices that are valid are those that relate to the features themselves...
       // also, the type of pickingInfo doesn't have a featureType property, so we cast it to any for now
       if ((pickingInfo as any).featureType === 'points') return;
+      
+      // -- try to avoid selecting invisible features
+      // this doesn't work very well because it won't override the underlying picking logic, can't see how to make certain features unselectable
+      // if (features.features[pickingInfo.index]?.properties?.visible === false) return;
+      
       // this logic is still not perfect in that if two objects overlap and we try to move the mouse from one to the other, 
       // the first one will not remain selected so the point we were aiming for will disappear... 
       // we could maybe fix this by only updating the selectedFeatureIndexes when we go out of the bounds of the current feature?
       setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
       // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
+    operation: 'mask+draw', //what does this do?
     getFillColor: (feature, isSelected) => [isSelected ? 100 : 0, 100, 100, feature.properties?.visible ? 128 : 0],
     getLineWidth: 1,
-    onClick(pickingInfo, event) {
+    onClick(_pickingInfo, event) {
       console.log(event.type);
     },
   });
+
+  const scatterplotLayer = useMemo(() => {
+    return new ScatterplotLayer({
+      id: 'scatterplot-layer',
+      data,
+      getRadius: d => d.size,
+      getFillColor: [255, 0, 0],
+      opacity: 0.25,
+      // pickable: true,
+    });
+  }, [data]);
   const controlStyle = useMemo(() => ({
     zIndex: 1,
     position: 'absolute',
@@ -117,7 +141,7 @@ export default function GeometryEditor() {
         controller={{
           doubleClickZoom: false
         }}
-        layers={[layer]}
+        layers={[scatterplotLayer, layer]}
         getCursor={layer.getCursor.bind(layer)}
       >
         <StaticMap 
