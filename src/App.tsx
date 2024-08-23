@@ -12,6 +12,7 @@ import {
   type FeatureCollection,
   // type Feature //different Feature to the one in FeatureCollection???
 } from '@deck.gl-community/editable-layers';
+import * as turf from '@turf/turf';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
 //7.319726 45.738033
@@ -26,6 +27,10 @@ const INITIAL_VIEW_STATE = {
 const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode | CompositeMode;
+//EditableGeoJsonLayer extends EditableLayer<FeatureCollection, EditableGeojsonLayerProps<FeatureCollection>>
+//type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps & {
+//  data: DataT;
+//  ...
 class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   static componentName = "PatchEditableGeoJsonLayer";
   getCursor({ isDragging }: { isDragging: boolean }) {
@@ -33,9 +38,12 @@ class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   }
 }
 
-function FeaturePanel({ features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes }: 
+function FeaturePanel({ 
+  features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes, data, selectedDataIndices, setSelectedDataIndices
+}: 
   { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void, 
-    selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void 
+    selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void,
+    data: { position: [number, number], size: number }[], selectedDataIndices: number[], setSelectedDataIndices: (indexes: number[]) => void
   }) {
   const numFeatures = features.features.length;
   return (
@@ -45,6 +53,19 @@ function FeaturePanel({ features, setFeatures, selectedFeatureIndexes, setSelect
         <div key={feature.id || i} className={selectedFeatureIndexes.includes(i) ? 'active' : ''}
         onMouseOver={() => setSelectedFeatureIndexes([i])}
         onMouseOut={() => setSelectedFeatureIndexes([])}
+        onClick={() => {
+          try {
+            const t = Date.now();
+            //I was expecting Position[][], but you passed Position | Position[] | Position[][] | Position[][][].
+            const poly = turf.polygon(feature.geometry.coordinates as any);
+            const d = data.map((d, j) => turf.booleanPointInPolygon(turf.point(d.position), poly) ? j : -1).filter(j => j !== -1);
+            console.log(Date.now() - t);
+            console.log(d.length);
+            setSelectedDataIndices(d);
+          } catch (e) {
+            console.error(e);
+          }
+        }}
         >
           {feature.geometry.type}
           <input type='checkbox' checked={feature.properties?.visible} onChange={(e) => {
@@ -72,11 +93,16 @@ export default function GeometryEditor() {
   });
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
+  const [selectedDataIndices, setSelectedDataIndices] = useState<number[]>([]);
 
   const data = useMemo(() => {
     const { longitude, latitude } = INITIAL_VIEW_STATE;
-    const p = () => [longitude + Math.random()*0.5 - 0.25, latitude + Math.random()*0.5 - 0.25];
-    return new Array(1e6).fill(0).map(() => ({ position: p(), size: 5+Math.random()*10 }));
+    const r = () => (2*(Math.random()-0.5))**3;
+    const p = () => [longitude + r()*0.2, latitude + r()*0.1] as [number, number];
+    //35621990 - cells in adenoma dataset
+    //806104 - cells in sample 10171
+    //447042 - cillian run12
+    return new Array(447042).fill(0).map(() => ({ position: p(), size: 5+Math.random()*10 }));
   }, []);
 
   const layer = new PatchEditableGeoJsonLayer({
@@ -101,6 +127,8 @@ export default function GeometryEditor() {
       
       // -- try to avoid selecting invisible features
       // this doesn't work very well because it won't override the underlying picking logic, can't see how to make certain features unselectable
+      // ** maybe what we need to consider is having separate FeatureCollections for different types of features,
+      // ** and then we can have a separate non-editable GeoJsonLayer for the 'invisible' / hidden features
       // if (features.features[pickingInfo.index]?.properties?.visible === false) return;
       
       // this logic is still not perfect in that if two objects overlap and we try to move the mouse from one to the other, 
@@ -122,11 +150,20 @@ export default function GeometryEditor() {
       id: 'scatterplot-layer',
       data,
       getRadius: d => d.size,
-      getFillColor: [255, 0, 0],
-      opacity: 0.25,
+      getFillColor: [255, 255, 255],
+      opacity: 0.1,
       // pickable: true,
     });
   }, [data]);
+  const highlightLayer = useMemo(() => {
+    return new ScatterplotLayer({
+      id: 'highlight-layer',
+      data: selectedDataIndices.map(i => data[i]), //suboptimal
+      getRadius: d => d.size,
+      getFillColor: [0, 255, 0],
+      opacity: 0.5,
+    });
+  }, [selectedDataIndices, data]);
   const controlStyle = useMemo(() => ({
     zIndex: 1,
     position: 'absolute',
@@ -141,7 +178,7 @@ export default function GeometryEditor() {
         controller={{
           doubleClickZoom: false
         }}
-        layers={[scatterplotLayer, layer]}
+        layers={[scatterplotLayer, layer, highlightLayer]}
         getCursor={layer.getCursor.bind(layer)}
       >
         <StaticMap 
@@ -183,7 +220,7 @@ export default function GeometryEditor() {
         </button>
       </div>
       {/* <FeaturePanel features={features} selectedFeatureIndexes={selectedFeatureIndexes} setSelectedFeatureIndexes={setSelectedFeatureIndexes} /> */}
-      <FeaturePanel {...{features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes}} />
+      <FeaturePanel {...{features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes, data, selectedDataIndices, setSelectedDataIndices}} />
     </>
   );
 }
