@@ -12,7 +12,7 @@ import {
   type FeatureCollection,
   // type Feature //different Feature to the one in FeatureCollection???
 } from '@deck.gl-community/editable-layers';
-import { filterPoly } from './utils';
+import { filterFeatureCollection, filterPoly } from './utils';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
 //7.319726 45.738033
@@ -89,15 +89,15 @@ export default function GeometryEditor() {
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
   const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
 
-  const n = 1e6;
+  //35621990 - cells in adenoma dataset
+  //806104 - cells in sample 10171
+  //447042 - cillian run12
+  const n = .5e6;
   
   const data = useMemo(() => {
     const { longitude, latitude } = INITIAL_VIEW_STATE;
     const r = () => (2*(Math.random()-0.5))**3;
     // const p = () => [longitude + r()*0.2, latitude + r()*0.1] as [number, number];
-    //35621990 - cells in adenoma dataset
-    //806104 - cells in sample 10171
-    //447042 - cillian run12
     const x = new Float32Array(n).map(() => longitude + r()*0.2);
     const y = new Float32Array(n).map(() => latitude + r()*0.1);
     const size = new Float32Array(n).map(() => 5+Math.random()*10);
@@ -114,6 +114,7 @@ export default function GeometryEditor() {
       for (const f of updatedData.features) {
         //would be nice to type our feature properties, even if in a somewhat ad-hoc way
         if (!Object.keys(f.properties).includes('visible')) f.properties.visible = true;
+        setSelectedDataIndices(filterFeatureCollection(updatedData, data.x, data.y));
       }
       setFeatures(updatedData);
     },
@@ -150,10 +151,10 @@ export default function GeometryEditor() {
       id: 'scatterplot-layer',
       data,
       getPosition: (_, {index}) => [data.x[index], data.y[index]], //todo use target array
-      getRadius: (_, {index}) => data.size[index],
+      getRadius: (_, {index}) => data.size[index] * 0.5,
       getFillColor: [255, 255, 255],
       opacity: 0.1,
-      // pickable: true,
+      pickable: false, // even though these are non-pickable, they still incur a performance cost mostly to do with the number of points & readPixels
     });
   }, [data]);
   const highlightLayer = useMemo(() => {
@@ -164,6 +165,7 @@ export default function GeometryEditor() {
       getRadius: i => data.size[i],
       getFillColor: [0, 255, 0],
       opacity: 0.5,
+      pickable: false,
     });
   }, [selectedDataIndices, data]);
   const controlStyle = useMemo(() => ({
@@ -184,6 +186,7 @@ export default function GeometryEditor() {
           highlightLayer
         ]}
         getCursor={layer.getCursor.bind(layer)}
+        // drawPickingColors={true}
       >
         <StaticMap 
         // accessToken={accessToken}

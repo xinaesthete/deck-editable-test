@@ -1,3 +1,5 @@
+import type { FeatureCollection } from "@deck.gl-community/editable-layers";
+
 export function filterPoly(points: [number, number][], xData: Float32Array, yData: Float32Array) {
     if (xData.length !== yData.length) throw new Error('xData and yData must have the same length');
     let minX = Number.MAX_VALUE;
@@ -32,4 +34,22 @@ export function filterPoly(points: [number, number][], xData: Float32Array, yDat
     }
 
     return new Uint32Array(xData.length).map((_, i) => i).filter(predicate);
+}
+
+/** this works, but is slow... */
+export function filterFeatureCollection(fc: FeatureCollection, xData: Float32Array, yData: Float32Array) {
+    const features = fc.features.filter(f => f.geometry.type === 'Polygon'); //this could be more general
+    // for now, we only support polygons because we assume the first element of the coordinates array is the outer ring(?)
+    // ^^ above copilot comment is probably right - if there were more complex polygon topologies, we'd need to handle them differently
+    // but this should work for all shapes that can be drawn with the ui as of now
+    const selectedDataIndices = new Uint32Array(xData.length);
+    let count = 0;
+    for (const feature of features) {
+        const points = feature.geometry.coordinates[0] as [number, number][];
+        const indices = filterPoly(points, xData, yData);
+        for (const index of indices) {
+            selectedDataIndices[count++] = index;
+        }
+    }
+    return selectedDataIndices.slice(0, count);
 }
