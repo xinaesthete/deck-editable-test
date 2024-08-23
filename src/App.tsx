@@ -7,9 +7,10 @@ import {
   DrawPolygonByDraggingMode,
   ModifyMode,
   TransformMode,
-  // TranslateMode,
+  TranslateMode,
   CompositeMode,
-  type FeatureCollection
+  type FeatureCollection,
+  // type Feature //different Feature to the one in FeatureCollection???
 } from '@deck.gl-community/editable-layers';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
@@ -30,6 +31,21 @@ class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   getCursor({ isDragging }: { isDragging: boolean }) {
     return super.getCursor({ isDragging }) || 'grab'; //nb, somewhat forced by supertype not to use a different string
   }
+}
+
+function FeaturePanel({ features, selectedFeatureIndexes, setSelectedFeatureIndexes }: 
+  { features: FeatureCollection, selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void }) {
+  const numFeatures = features.features.length;
+  return (
+    <div className='feature-stats'>
+      <div>Features: {numFeatures}</div>
+      {features.features.map((feature, i) => (
+        <div key={feature.id || i} className={selectedFeatureIndexes.includes(i) ? 'active' : ''}>
+          {feature.geometry.type}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 
@@ -61,6 +77,9 @@ export default function GeometryEditor() {
       // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
     getFillColor: () => [0, 100, 100, 128],
+    onClick(pickingInfo, event) {
+      console.log(event.type);
+    },
   });
   const controlStyle = useMemo(() => ({
     zIndex: 1,
@@ -108,13 +127,16 @@ export default function GeometryEditor() {
         <button
           className={`button ${mode instanceof CompositeMode ? 'active' : ''}`}
           onClick={() => setMode(() => new CompositeMode([
-            new TransformMode(),
+            // new TransformMode(),
+            new TranslateMode(),
             new ModifyMode(), 
           ]))}
         >
           Edit
         </button>
       </div>
+      {/* <FeaturePanel features={features} selectedFeatureIndexes={selectedFeatureIndexes} setSelectedFeatureIndexes={setSelectedFeatureIndexes} /> */}
+      <FeaturePanel {...{features, selectedFeatureIndexes, setSelectedFeatureIndexes}} />
     </>
   );
 }
