@@ -1,5 +1,6 @@
 import { useMemo, useState, type CSSProperties, useCallback } from 'react';
 import DeckGL, { ScatterplotLayer } from 'deck.gl';
+import { MaskExtension } from '@deck.gl/extensions';
 import {
   EditableGeoJsonLayer,
   DrawLineStringMode,
@@ -87,7 +88,7 @@ export default function GeometryEditor() {
   //35621990 - cells in adenoma dataset
   //806104 - cells in sample 10171
   //447042 - cillian run12
-  const n = 1e5;
+  const n = 1e6;
   const data = useMemo(() => {
     const { longitude, latitude } = INITIAL_VIEW_STATE;
     const r = () => (2*(Math.random()-0.5));
@@ -110,6 +111,7 @@ export default function GeometryEditor() {
   
   const setFeatures = useCallback((features: FeatureCollection, updatedIndexes?: number[]) => {
     setFeaturesX(features);
+    return;
     if (updatedIndexes) {
       const newMap = new Map(featureDataIndexMap);
       for (const i of updatedIndexes) {
@@ -122,7 +124,8 @@ export default function GeometryEditor() {
       setFeatureDataIndexMap(newMap);
       setSelectedDataIndices(newIndices);
     } else {
-      console.warn('No updated indexes provided... doing it the slow way');
+      // return;
+      console.warn('No updated indexes provided... doing it the slow (and still wrong) way');
       // setSelectedDataIndices(filterFeatureCollection(features, data.x, data.y));
       const newMap = new Map();
       for (let i=0; i<features.features.length; i++) {
@@ -137,7 +140,7 @@ export default function GeometryEditor() {
   }, [n, data.x, data.y, featureDataIndexMap]);  
 
   
-  const layer = new PatchEditableGeoJsonLayer({
+  const editLayer = new PatchEditableGeoJsonLayer({
     data: features,
     mode,
     selectedFeatureIndexes,
@@ -170,12 +173,25 @@ export default function GeometryEditor() {
       setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
       // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
-    operation: 'mask+draw', //what does this do?
+    id: 'edit',
+    operation: 'mask+draw', //what does this do? -- something useful...
     getFillColor: (feature, isSelected) => [isSelected ? 100 : 0, 100, 100, feature.properties?.visible ? 128 : 0],
     getLineWidth: 1,
     onClick(_pickingInfo, event) {
       console.log(event.type);
     },
+    onDragStart() {
+      // stop picking when dragging...
+      // seems to make some logical sense, but is considered an error by deck.gl
+      // "Picked non-existent layer. Is picking buffer corrupt?"
+      // seems to me that _onpointermove should be checking for isDragging before calling getPicks()
+      // setIsDragging(true);
+    },
+    onDragEnd() {
+      // setIsDragging(false);
+    },
+    pickingRadius: 4,
+    // pickable: !isDragging,
   });
 
   const scatterplotLayer = useMemo(() => {
@@ -192,12 +208,17 @@ export default function GeometryEditor() {
   const highlightLayer = useMemo(() => {
     return new ScatterplotLayer({
       id: 'highlight-layer',
-      data: selectedDataIndices,//.map(i => data[i]), //suboptimal
-      getPosition: i => [data.x[i], data.y[i]], //todo use target array
-      getRadius: i => data.size[i],
+      data,
+      getPosition: (_, {index}) => [data.x[index], data.y[index]], //todo use target array
+      getRadius: (_, {index}) => data.size[index] * 0.5,
+      // data: selectedDataIndices,//.map(i => data[i]), //suboptimal
+      // getPosition: i => [data.x[i], data.y[i]], //todo use target array
+      // getRadius: i => data.size[i],
       getFillColor: [0, 255, 0],
       opacity: 0.5,
       pickable: false,
+      maskId: 'edit',
+      extensions: [new MaskExtension({ id: 'mask' })],
     });
   }, [selectedDataIndices, data]);
   const controlStyle = useMemo(() => ({
@@ -214,10 +235,12 @@ export default function GeometryEditor() {
         controller={{
           doubleClickZoom: false
         }}
-        layers={[scatterplotLayer, layer, 
-          highlightLayer
+        layers={[
+          scatterplotLayer, 
+          highlightLayer,
+          editLayer, 
         ]}
-        getCursor={layer.getCursor.bind(layer)}
+        getCursor={editLayer.getCursor.bind(editLayer)}
         // drawPickingColors={true}
       >
         <StaticMap 
