@@ -124,6 +124,7 @@ export default function GeometryEditor() {
         // accessToken={accessToken}
         mapboxAccessToken={accessToken}
         collectResourceTiming={false}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
       />
       </DeckGL>
 
