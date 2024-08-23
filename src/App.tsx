@@ -47,6 +47,11 @@ function FeaturePanel({ features, setFeatures, selectedFeatureIndexes, setSelect
         onMouseOut={() => setSelectedFeatureIndexes([])}
         >
           {feature.geometry.type}
+          <input type='checkbox' checked={feature.properties?.visible} onChange={(e) => {
+            const newFeatures = features.features.slice();
+            newFeatures[i] = { ...feature, properties: { ...feature.properties, visible: e.target.checked } };
+            setFeatures({ ...features, features: newFeatures });
+          }} />
           <button type='button' onClick={() => {
             const newFeatures = features.features.slice();
             newFeatures.splice(i, 1);
@@ -65,7 +70,7 @@ export default function GeometryEditor() {
     type: 'FeatureCollection',
     features: []
   });
-  const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonMode());
+  const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
 
   const layer = new PatchEditableGeoJsonLayer({
@@ -73,6 +78,10 @@ export default function GeometryEditor() {
     mode,
     selectedFeatureIndexes,
     onEdit: ({ updatedData }) => {
+      // for (const i in featureIndexes) // lies, this is undefined
+      for (const f of updatedData.features) {
+        if (!Object.keys(f.properties).includes('visible')) f.properties.visible = true;
+      }
       setFeatures(updatedData);
     },
     onHover(pickingInfo) {
@@ -88,7 +97,8 @@ export default function GeometryEditor() {
       setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
       // setSelectedFeatureIndexes(features.features.map((_, i) => i));
     },
-    getFillColor: (feature, isSelected) => [isSelected ? 100 : 0, 100, 100, 128],
+    getFillColor: (feature, isSelected) => [isSelected ? 100 : 0, 100, 100, feature.properties?.visible ? 128 : 0],
+    getLineWidth: 1,
     onClick(pickingInfo, event) {
       console.log(event.type);
     },
