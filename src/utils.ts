@@ -1,4 +1,5 @@
 export function filterPoly(points: [number, number][], xData: Float32Array, yData: Float32Array) {
+    if (xData.length !== yData.length) throw new Error('xData and yData must have the same length');
     let minX = Number.MAX_VALUE;
     let minY = Number.MAX_VALUE;
     let maxX = Number.MIN_VALUE;
