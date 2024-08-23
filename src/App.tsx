@@ -12,7 +12,7 @@ import {
   type FeatureCollection,
   // type Feature //different Feature to the one in FeatureCollection???
 } from '@deck.gl-community/editable-layers';
-import * as turf from '@turf/turf';
+import { filterPoly } from './utils';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
 //7.319726 45.738033
@@ -43,7 +43,8 @@ function FeaturePanel({
 }: 
   { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void, 
     selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void,
-    data: { position: [number, number], size: number }[], selectedDataIndices: number[], setSelectedDataIndices: (indexes: number[]) => void
+    data: { x: Float32Array, y: Float32Array, size: Float32Array, length: number },
+    selectedDataIndices: Uint32Array, setSelectedDataIndices: (indices: Uint32Array) => void
   }) {
   const numFeatures = features.features.length;
   return (
@@ -54,17 +55,10 @@ function FeaturePanel({
         onMouseOver={() => setSelectedFeatureIndexes([i])}
         onMouseOut={() => setSelectedFeatureIndexes([])}
         onClick={() => {
-          try {
-            const t = Date.now();
-            //I was expecting Position[][], but you passed Position | Position[] | Position[][] | Position[][][].
-            const poly = turf.polygon(feature.geometry.coordinates as any);
-            const d = data.map((d, j) => turf.booleanPointInPolygon(turf.point(d.position), poly) ? j : -1).filter(j => j !== -1);
-            console.log(Date.now() - t);
-            console.log(d.length);
-            setSelectedDataIndices(d);
-          } catch (e) {
-            console.error(e);
-          }
+          const points = feature.geometry.coordinates[0] as [number, number][];
+          const t = Date.now();
+          setSelectedDataIndices(filterPoly(points, data.x, data.y));
+          console.log('filterPoly', points.length, Date.now()-t);
         }}
         >
           {feature.geometry.type}
@@ -93,17 +87,23 @@ export default function GeometryEditor() {
   });
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
-  const [selectedDataIndices, setSelectedDataIndices] = useState<number[]>([]);
+  const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
 
+  const n = 1e6;
+  
   const data = useMemo(() => {
     const { longitude, latitude } = INITIAL_VIEW_STATE;
     const r = () => (2*(Math.random()-0.5))**3;
-    const p = () => [longitude + r()*0.2, latitude + r()*0.1] as [number, number];
+    // const p = () => [longitude + r()*0.2, latitude + r()*0.1] as [number, number];
     //35621990 - cells in adenoma dataset
     //806104 - cells in sample 10171
     //447042 - cillian run12
-    return new Array(447042).fill(0).map(() => ({ position: p(), size: 5+Math.random()*10 }));
-  }, []);
+    const x = new Float32Array(n).map(() => longitude + r()*0.2);
+    const y = new Float32Array(n).map(() => latitude + r()*0.1);
+    const size = new Float32Array(n).map(() => 5+Math.random()*10);
+    // return new Array(447042).fill(0).map(() => ({ position: p(), size: 5+Math.random()*10 }));
+    return { x, y, size, length: n };
+  }, [n]);
 
   const layer = new PatchEditableGeoJsonLayer({
     data: features,
@@ -149,7 +149,8 @@ export default function GeometryEditor() {
     return new ScatterplotLayer({
       id: 'scatterplot-layer',
       data,
-      getRadius: d => d.size,
+      getPosition: (_, {index}) => [data.x[index], data.y[index]], //todo use target array
+      getRadius: (_, {index}) => data.size[index],
       getFillColor: [255, 255, 255],
       opacity: 0.1,
       // pickable: true,
@@ -158,8 +159,9 @@ export default function GeometryEditor() {
   const highlightLayer = useMemo(() => {
     return new ScatterplotLayer({
       id: 'highlight-layer',
-      data: selectedDataIndices.map(i => data[i]), //suboptimal
-      getRadius: d => d.size,
+      data: selectedDataIndices,//.map(i => data[i]), //suboptimal
+      getPosition: i => [data.x[i], data.y[i]], //todo use target array
+      getRadius: i => data.size[i],
       getFillColor: [0, 255, 0],
       opacity: 0.5,
     });
@@ -178,7 +180,9 @@ export default function GeometryEditor() {
         controller={{
           doubleClickZoom: false
         }}
-        layers={[scatterplotLayer, layer, highlightLayer]}
+        layers={[scatterplotLayer, layer, 
+          highlightLayer
+        ]}
         getCursor={layer.getCursor.bind(layer)}
       >
         <StaticMap 
