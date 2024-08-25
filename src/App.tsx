@@ -1,5 +1,7 @@
 import { useMemo, useState, type CSSProperties, useCallback } from 'react';
 import DeckGL, { ScatterplotLayer } from 'deck.gl';
+// import { luma } from '@luma.gl/core';
+// import { WebGPUDevice } from '@luma.gl/webgpu';
 import { MaskExtension } from '@deck.gl/extensions';
 import {
   EditableGeoJsonLayer,
@@ -24,7 +26,7 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0
 };
-
+// console.log('supported luma devices', luma.getSupportedDevices());
 const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode | CompositeMode;
@@ -83,6 +85,7 @@ function FeaturePanel({
   );
 }
 
+let MASK_ONLY = true;
 
 export default function GeometryEditor() {
   //35621990 - cells in adenoma dataset
@@ -111,7 +114,7 @@ export default function GeometryEditor() {
   
   const setFeatures = useCallback((features: FeatureCollection, updatedIndexes?: number[]) => {
     setFeaturesX(features);
-    return;
+    if (MASK_ONLY) return;
     if (updatedIndexes) {
       const newMap = new Map(featureDataIndexMap);
       for (const i of updatedIndexes) {
@@ -241,6 +244,11 @@ export default function GeometryEditor() {
           editLayer, 
         ]}
         getCursor={editLayer.getCursor.bind(editLayer)}
+        // -- as soon as any deviceProps are set (even {}), we get errors 
+        //"deck: Cannot access 'WebGPUDevice' before initialization undefined"
+        // deviceProps={{ 
+        //   // spector: true, debug: true
+        // }}
         // drawPickingColors={true}
       >
         <StaticMap 
