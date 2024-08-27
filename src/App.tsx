@@ -9,7 +9,7 @@ import {
   DrawPolygonMode,
   DrawPolygonByDraggingMode,
   ModifyMode,
-  TransformMode,
+  // TransformMode,
   TranslateMode,
   CompositeMode,
   type FeatureCollection,
@@ -42,7 +42,7 @@ class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
 }
 
 function FeaturePanel({ 
-  features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes, data, selectedDataIndices, setSelectedDataIndices
+  features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes, //data, selectedDataIndices, setSelectedDataIndices
 }: 
   { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void, 
     selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void,
