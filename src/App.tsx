@@ -18,7 +18,8 @@ import {
 import { aggregateIndices, filterPoly } from './utils';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
-//7.319726 45.738033
+import { v4 as uuid } from 'uuid';
+
 const INITIAL_VIEW_STATE = {
   longitude: 7.319726,
   latitude: 45.738033,
@@ -42,10 +43,12 @@ class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
 }
 
 function FeaturePanel({ 
-  features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes, //data, selectedDataIndices, setSelectedDataIndices
+  features, setFeatures,
+  setSelectedFeatureIDs, selectedFeatureIDs
 }: 
   { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void, 
-    selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void,
+    // selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void,
+    selectedFeatureIDs: (string | number)[], setSelectedFeatureIDs: (ids: (string | number)[]) => void,
     data: { x: Float32Array, y: Float32Array, size: Float32Array, length: number },
     selectedDataIndices: Uint32Array, setSelectedDataIndices: (indices: Uint32Array) => void
   }) {
@@ -54,9 +57,9 @@ function FeaturePanel({
     <div className='feature-panel'>
       <div>Features: {numFeatures}</div>
       {features.features.map((feature, i) => (
-        <div key={feature.id || i} className={selectedFeatureIndexes.includes(i) ? 'active' : ''}
-        onMouseOver={() => setSelectedFeatureIndexes([i])}
-        onMouseOut={() => setSelectedFeatureIndexes([])}
+        <div key={feature.id || i} className={selectedFeatureIDs.includes(feature.id!) ? 'active' : ''}
+        onMouseOver={() => setSelectedFeatureIDs([feature.id!])}
+        onMouseOut={() => setSelectedFeatureIDs([])}
         onClick={() => {
           // const points = feature.geometry.coordinates[0] as [number, number][];
           // const t = Date.now();
@@ -77,7 +80,7 @@ function FeaturePanel({
             //-- the only sensible strategy is to have a unique id for each feature and use that as much as possible
             newFeatures.splice(i, 1);
             setFeatures({ ...features, features: newFeatures });
-            setSelectedFeatureIndexes([]);
+            setSelectedFeatureIDs([]);
           }}>x</button>
         </div>
       ))}
@@ -108,7 +111,15 @@ export default function GeometryEditor() {
     features: []
   });  
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
-  const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
+  // const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
+  const [selectedFeatureIDs, setSelectedFeatureIDs] = useState<(string | number)[]>([]);
+  const selectedFeatureIndexes = useMemo(() => {
+    return features.features.reduce((acc, f, i) => {
+      if (f.id === undefined) return acc;
+      if (selectedFeatureIDs.includes(f.id)) acc.push(i);
+      return acc;
+    }, [] as number[]);
+  }, [features, selectedFeatureIDs]);
   const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
   const [featureDataIndexMap, setFeatureDataIndexMap] = useState<Map<number, Uint32Array>>(new Map());
   
@@ -153,6 +164,7 @@ export default function GeometryEditor() {
       for (const f of updatedData.features) {
         //would be nice to type our feature properties, even if in a somewhat ad-hoc way
         if (!Object.keys(f.properties).includes('visible')) f.properties.visible = true;
+        f.id = f.id || uuid();
       }
       setFeatures(updatedData, featureIndexes);
     },
@@ -173,8 +185,9 @@ export default function GeometryEditor() {
       // this logic is still not perfect in that if two objects overlap and we try to move the mouse from one to the other, 
       // the first one will not remain selected so the point we were aiming for will disappear... 
       // we could maybe fix this by only updating the selectedFeatureIndexes when we go out of the bounds of the current feature?
-      setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
-      // setSelectedFeatureIndexes(features.features.map((_, i) => i));
+      const id = features.features[pickingInfo.index]?.id;
+      setSelectedFeatureIDs(id ? [id] : []);
+      // setSelectedFeatureIndexes(pickingInfo.index !== -1 ? [pickingInfo.index] : []);
     },
     id: 'edit',
     operation: 'mask+draw', //what does this do? -- something useful...
@@ -290,7 +303,7 @@ export default function GeometryEditor() {
         </button>
       </div>
       {/* <FeaturePanel features={features} selectedFeatureIndexes={selectedFeatureIndexes} setSelectedFeatureIndexes={setSelectedFeatureIndexes} /> */}
-      <FeaturePanel {...{features, setFeatures, selectedFeatureIndexes, setSelectedFeatureIndexes, data, selectedDataIndices, setSelectedDataIndices}} />
+      <FeaturePanel {...{features, setFeatures, selectedFeatureIDs, setSelectedFeatureIDs, data, selectedDataIndices, setSelectedDataIndices}} />
     </>
   );
 }
