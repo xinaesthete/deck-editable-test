@@ -2,6 +2,8 @@
 
 Figuring out the community `EditableGeoJsonLayer` in deck.gl.
 
+This is now [deplyed to netlify](https://deckgl-editable-geojson.netlify.app/).
+
 Some notes on things that may be worth patching in PRs... I anticipate using this layer fairly heavily in the near future, so may take on more of the maintenance of it.
 
 ## Current issues:
