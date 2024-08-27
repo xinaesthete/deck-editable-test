@@ -16,27 +16,3 @@ The typing of the `getCursor()` method potentially returning `null` caused a nig
 
 As soon as any `deviceProps` are passed to `<DeckGL>` (even empty `{}`), we get errors `"deck: Cannot access 'WebGPUDevice' before initialization undefined"`.
 
-Some of the luma documentation needs review, e.g.
-
-### https://luma.gl/docs/api-reference/webgpu/ is inconsistent in referring to WebGL / WebGPU
-
-To use a luma.gl WebGPU Device with raw WebGPU calls, the application needs to access the GPUDevice. The raw WebGPU handle is available on the WebGPUDevice subclass:
-
-```ts
-// @ts-expect-error
-const gl = device.handle;
-```
-
-With a bit more work, typescript users can retrieve the WebGLRenderingContext without ignoring type errors:
-
-```ts
-import {Device, cast} from '@luma.gl/core';
-import {WebGPUDevice} from '@luma.gl/webgpu'; // Installs the WebGPUDevice adapter
-
-function f(device: Device) {
-  const webgpuDevice = device as WebGPUDevice;
-  const gpuDevice: GPUDevice = webgpuDevice.handle; // Get underlying WebGPU device
-  ...
-}
-```
-
