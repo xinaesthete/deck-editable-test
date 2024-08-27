@@ -3737,6 +3737,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^10":
+  version: 10.0.0
+  resolution: "@types/uuid@npm:10.0.0"
+  checksum: 10c0/9a1404bf287164481cb9b97f6bb638f78f955be57c40c6513b7655160beb29df6f84c915aaf4089a1559c216557dc4d2f79b48d978742d3ae10b937420ddac60
+  languageName: node
+  linkType: hard
+
 "@types/viewport-mercator-project@npm:*":
   version: 6.1.6
   resolution: "@types/viewport-mercator-project@npm:6.1.6"
@@ -4363,6 +4370,7 @@ __metadata:
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     "@types/react-map-gl": "npm:^6.1.6"
+    "@types/uuid": "npm:^10"
     "@vitejs/plugin-react-swc": "npm:^3.5.0"
     deck.gl: "npm:^9.0.27"
     dotenv: "npm:^16.4.5"
@@ -4376,6 +4384,7 @@ __metadata:
     react-map-gl: "npm:^7.1.7"
     typescript: "npm:^5.5.3"
     typescript-eslint: "npm:^8.0.1"
+    uuid: "npm:^10.0.0"
     vite: "npm:^5.4.1"
   languageName: unknown
   linkType: soft
@@ -6776,6 +6785,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10c0/8867e438990d1d33ac61093e2e4e3477a2148b844e4fa9e3c2360fa4399292429c4b6ec64537eb1659c97b2d10db349c673ad58b50e2824a11e0d3630de3c056
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "uuid@npm:10.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/eab18c27fe4ab9fb9709a5d5f40119b45f2ec8314f8d4cf12ce27e4c6f4ffa4a6321dc7db6c515068fa373c075b49691ba969f0010bf37f44c37ca40cd6bf7fe
   languageName: node
   linkType: hard
 
