@@ -239,8 +239,8 @@ export default function GeometryEditor() {
           doubleClickZoom: false
         }}
         layers={[
-          // scatterplotLayer, 
-          // highlightLayer,
+          scatterplotLayer, 
+          highlightLayer,
           editLayer, 
         ]}
         getCursor={editLayer.getCursor.bind(editLayer)}
