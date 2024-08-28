@@ -8,11 +8,10 @@ Some notes on things that may be worth patching in PRs... I anticipate using thi
 
 ## Current issues:
 
-`@luma.gl/*@9.0.25` for some reason leads to shader linking errors; downgrading to `@luma.gl/*@9.0.24` fixes this.
+Changing luma.gl versions can at times cause weird shader error that is still being tracked down (https://github.com/visgl/luma.gl/issues/2222).
 
 The typing of the `getCursor()` method potentially returning `null` caused a niggle with TS that I currently work-around by sub-classing `EditableGeoJsonLayer` and overriding that method.
 
 `TransformMode` breaks due to behaviour inherited from `RotateMode` when `selectedFeatureIndexes` is empty `[]` - tries to `getGuides()`, ends up with `NaN` / `Infinity` and fails to catch that.
 
-As soon as any `deviceProps` are passed to `<DeckGL>` (even empty `{}`), we get errors `"deck: Cannot access 'WebGPUDevice' before initialization undefined"`.
-
+Passing `spector` or `debug` in `deviceProps` to `<DeckGL>` cause errors. Luma version 9.0.25 fixes the issue where even `deviceProps={{}}` would cause an error.
