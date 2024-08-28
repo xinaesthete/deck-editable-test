@@ -214,7 +214,11 @@ export default function GeometryEditor() {
     return new ScatterplotLayer({
       id: 'scatterplot-layer',
       data,
-      getPosition: (_, {index}) => [data.x[index], data.y[index]], //todo use target array
+      getPosition: (_, {index, target}) => {
+        target[0] = data.x[index];
+        target[1] = data.y[index];
+        return target as [number, number]; //nb I think deck.gl types could be improved here, the type of `target` should be compatible with the return type
+      },
       getRadius: (_, {index}) => data.size[index] * 0.5,
       getFillColor: [255, 255, 255],
       opacity: 0.1,
