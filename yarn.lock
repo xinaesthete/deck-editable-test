@@ -3642,7 +3642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mapbox-gl@npm:*, @types/mapbox-gl@npm:>=1.0.0":
+"@types/mapbox-gl@npm:>=1.0.0":
   version: 3.4.0
   resolution: "@types/mapbox-gl@npm:3.4.0"
   dependencies:
@@ -3715,18 +3715,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-map-gl@npm:^6.1.6":
-  version: 6.1.6
-  resolution: "@types/react-map-gl@npm:6.1.6"
-  dependencies:
-    "@types/geojson": "npm:*"
-    "@types/mapbox-gl": "npm:*"
-    "@types/react": "npm:*"
-    "@types/viewport-mercator-project": "npm:*"
-  checksum: 10c0/caf1dc92a90d6a2a8d31945de3e7b7df190dbd1b56da12740f74f4cf0ae328adc0046230fc05fcba4abfc2dd904818a16b3e211cb6edf4180be49f32fc27286c
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:*, @types/react@npm:^18.3.3":
   version: 18.3.4
   resolution: "@types/react@npm:18.3.4"
@@ -3741,15 +3729,6 @@ __metadata:
   version: 10.0.0
   resolution: "@types/uuid@npm:10.0.0"
   checksum: 10c0/9a1404bf287164481cb9b97f6bb638f78f955be57c40c6513b7655160beb29df6f84c915aaf4089a1559c216557dc4d2f79b48d978742d3ae10b937420ddac60
-  languageName: node
-  linkType: hard
-
-"@types/viewport-mercator-project@npm:*":
-  version: 6.1.6
-  resolution: "@types/viewport-mercator-project@npm:6.1.6"
-  dependencies:
-    gl-matrix: "npm:^3.2.0"
-  checksum: 10c0/8671280edbe719b6649a682310113c9a86a98f7e990cebe38d928d8eb1d64216e20ba0b3117735f22df621c3fd6d2bf78de992f3416c365030ed07baaefaa0a6
   languageName: node
   linkType: hard
 
@@ -4369,7 +4348,6 @@ __metadata:
     "@turf/turf": "npm:^7.1.0"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
-    "@types/react-map-gl": "npm:^6.1.6"
     "@types/uuid": "npm:^10"
     "@vitejs/plugin-react-swc": "npm:^3.5.0"
     deck.gl: "npm:^9.0.27"
@@ -4987,7 +4965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.2.0, gl-matrix@npm:^3.4.0, gl-matrix@npm:^3.4.3":
+"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.4.0, gl-matrix@npm:^3.4.3":
   version: 3.4.3
   resolution: "gl-matrix@npm:3.4.3"
   checksum: 10c0/c8ee6e2ce2d089b4ba4ae13ec9d4cb99bf2abe5f68f0cb08d94bbd8bafbec13aacc7230b86539ce5ca01b79226ea8c3194f971f5ca0c81838bc5e4e619dc398e
