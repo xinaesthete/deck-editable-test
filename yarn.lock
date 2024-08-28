@@ -884,77 +884,77 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/constants@npm:9.0.25, @luma.gl/constants@npm:^9.0.11, @luma.gl/constants@npm:^9.0.15":
-  version: 9.0.25
-  resolution: "@luma.gl/constants@npm:9.0.25"
-  checksum: 10c0/8715ba786e1a0b94e1650fa90a2121029587756cb6eb7a9bf3c65f8ecd9d25a54473a209e715bdf0dda707e0faa8607fafcc959321d98f0261e17349e0daf59e
+"@luma.gl/constants@npm:9.0.26, @luma.gl/constants@npm:^9.0.11, @luma.gl/constants@npm:^9.0.15":
+  version: 9.0.26
+  resolution: "@luma.gl/constants@npm:9.0.26"
+  checksum: 10c0/2dfd2eae69ec99bf5ddd03f743e3d9698a95f2a8dfdbb5bb7ec476cdb4e9245dd09088e51bc145832f7b8378a8dacdde71b8593dd17925104051f153c07ee29b
   languageName: node
   linkType: hard
 
 "@luma.gl/core@npm:^9.0.11, @luma.gl/core@npm:^9.0.15":
-  version: 9.0.25
-  resolution: "@luma.gl/core@npm:9.0.25"
+  version: 9.0.26
+  resolution: "@luma.gl/core@npm:9.0.26"
   dependencies:
     "@math.gl/types": "npm:^4.0.0"
     "@probe.gl/env": "npm:^4.0.2"
     "@probe.gl/log": "npm:^4.0.2"
     "@probe.gl/stats": "npm:^4.0.2"
     "@types/offscreencanvas": "npm:^2019.6.4"
-  checksum: 10c0/a8374bb66f89253e8ec5a33e8fe992267b4b15490dcae51ff69ada2baaf7894c22dc1568d911c3388639e5fb57cf74d959bd58ba8c48757a2f3b6fedc8c3bdb6
+  checksum: 10c0/a484cc09b55e95a6b45c4017848b12208be7e57d3c6d15da41ee083a5af5b58c22262c6a9f8a0b91691506be9e35ca2c5cc7d5a70c4f0501678821e45cdae8ad
   languageName: node
   linkType: hard
 
-"@luma.gl/engine@npm:^9.0.11, @luma.gl/engine@npm:^9.0.15, @luma.gl/engine@npm:^9.0.25":
-  version: 9.0.25
-  resolution: "@luma.gl/engine@npm:9.0.25"
+"@luma.gl/engine@npm:^9.0.11, @luma.gl/engine@npm:^9.0.15, @luma.gl/engine@npm:^9.0.26":
+  version: 9.0.26
+  resolution: "@luma.gl/engine@npm:9.0.26"
   dependencies:
-    "@luma.gl/shadertools": "npm:9.0.25"
+    "@luma.gl/shadertools": "npm:9.0.26"
     "@math.gl/core": "npm:^4.0.0"
     "@probe.gl/log": "npm:^4.0.2"
     "@probe.gl/stats": "npm:^4.0.2"
   peerDependencies:
     "@luma.gl/core": ^9.0.0
-  checksum: 10c0/97739b4e66eca60efeed4a950265378c021776f99d72bfa1e6e35ff00317b8e914c81d1db7be7dbc06f1588c6253f8cecde17ef3a1c6786d7f9101b957a567fe
+  checksum: 10c0/d6cbe85fa56233ccb6cddb13fe012d6659ec7950004e14c45644738042f75cdac5acca3697874cb1de5f6752628589cc55d94388b4412631fbfa2e857a4c14b4
   languageName: node
   linkType: hard
 
 "@luma.gl/gltf@npm:^9.0.15":
-  version: 9.0.25
-  resolution: "@luma.gl/gltf@npm:9.0.25"
+  version: 9.0.26
+  resolution: "@luma.gl/gltf@npm:9.0.26"
   dependencies:
     "@loaders.gl/textures": "npm:^4.2.0"
-    "@luma.gl/shadertools": "npm:9.0.25"
+    "@luma.gl/shadertools": "npm:9.0.26"
     "@math.gl/core": "npm:^4.0.0"
   peerDependencies:
     "@loaders.gl/core": ^4.2.0
     "@luma.gl/core": ^9.0.0
     "@luma.gl/engine": ^9.0.0
-  checksum: 10c0/3e41956947cce2351e04a0e1bf596639e1616dded695c3dc719add1cb87702ae1a6f1df872d8928ca0b45d734507012a2722f9428a8f1c2b080380aca0a77e0b
+  checksum: 10c0/393d9f5635a02270f1e8dbf8bddd91e2ddfd04266f97c4f26400d56d41a5fed8e3442e7a4810fb7680e816b7056f89170d349d9e3016e3c0f964bba333fca731
   languageName: node
   linkType: hard
 
-"@luma.gl/shadertools@npm:9.0.25, @luma.gl/shadertools@npm:^9.0.15":
-  version: 9.0.25
-  resolution: "@luma.gl/shadertools@npm:9.0.25"
+"@luma.gl/shadertools@npm:9.0.26, @luma.gl/shadertools@npm:^9.0.15":
+  version: 9.0.26
+  resolution: "@luma.gl/shadertools@npm:9.0.26"
   dependencies:
     "@math.gl/core": "npm:^4.0.0"
     "@math.gl/types": "npm:^4.0.0"
     wgsl_reflect: "npm:^1.0.1"
   peerDependencies:
     "@luma.gl/core": ^9.0.0
-  checksum: 10c0/09090e3f74840be1ce1ffdfecd85d98a7927aa53bd12275c120b0aea53177f50326dfa368f142fcec98688b649de3da9bff1d9cdffd37be82ad3b7e740900852
+  checksum: 10c0/2e831ba762ff69cf79e4ca6541bde5799dcbb1556f609fb37fafb9c9687a08b41f3be2d81695685ba611788893671af12bab03baef8cb199c8b75f77e5f5196b
   languageName: node
   linkType: hard
 
-"@luma.gl/webgl@npm:^9.0.15, @luma.gl/webgl@npm:^9.0.25":
-  version: 9.0.25
-  resolution: "@luma.gl/webgl@npm:9.0.25"
+"@luma.gl/webgl@npm:^9.0.15, @luma.gl/webgl@npm:^9.0.26":
+  version: 9.0.26
+  resolution: "@luma.gl/webgl@npm:9.0.26"
   dependencies:
-    "@luma.gl/constants": "npm:9.0.25"
+    "@luma.gl/constants": "npm:9.0.26"
     "@probe.gl/env": "npm:^4.0.2"
   peerDependencies:
     "@luma.gl/core": ^9.0.0
-  checksum: 10c0/5bc924c40c8158993c1d0951c2e56f631352cae4f16f825aa584bcaff1ca2b5080b27e5576ae32e50c19ba5ed08d89b7c0ba05f3f607acc5aa319ada6a9aed19
+  checksum: 10c0/76e4d58fd4aa0d4d598d485cde2f483c638c15dec6600a18f74754eede7188e85a997edbdc3a28f1e4b127ae741484d11cb8fe78dec2983af4f844d3bbc403be
   languageName: node
   linkType: hard
 
@@ -1301,90 +1301,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-darwin-arm64@npm:1.7.18"
+"@swc/core-darwin-arm64@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-darwin-arm64@npm:1.7.21"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-darwin-x64@npm:1.7.18"
+"@swc/core-darwin-x64@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-darwin-x64@npm:1.7.21"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.7.18"
+"@swc/core-linux-arm-gnueabihf@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.7.21"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.7.18"
+"@swc/core-linux-arm64-gnu@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.7.21"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-linux-arm64-musl@npm:1.7.18"
+"@swc/core-linux-arm64-musl@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-linux-arm64-musl@npm:1.7.21"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-linux-x64-gnu@npm:1.7.18"
+"@swc/core-linux-x64-gnu@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-linux-x64-gnu@npm:1.7.21"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-linux-x64-musl@npm:1.7.18"
+"@swc/core-linux-x64-musl@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-linux-x64-musl@npm:1.7.21"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.7.18"
+"@swc/core-win32-arm64-msvc@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.7.21"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.7.18"
+"@swc/core-win32-ia32-msvc@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.7.21"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.7.18":
-  version: 1.7.18
-  resolution: "@swc/core-win32-x64-msvc@npm:1.7.18"
+"@swc/core-win32-x64-msvc@npm:1.7.21":
+  version: 1.7.21
+  resolution: "@swc/core-win32-x64-msvc@npm:1.7.21"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "@swc/core@npm:^1.5.7":
-  version: 1.7.18
-  resolution: "@swc/core@npm:1.7.18"
+  version: 1.7.21
+  resolution: "@swc/core@npm:1.7.21"
   dependencies:
-    "@swc/core-darwin-arm64": "npm:1.7.18"
-    "@swc/core-darwin-x64": "npm:1.7.18"
-    "@swc/core-linux-arm-gnueabihf": "npm:1.7.18"
-    "@swc/core-linux-arm64-gnu": "npm:1.7.18"
-    "@swc/core-linux-arm64-musl": "npm:1.7.18"
-    "@swc/core-linux-x64-gnu": "npm:1.7.18"
-    "@swc/core-linux-x64-musl": "npm:1.7.18"
-    "@swc/core-win32-arm64-msvc": "npm:1.7.18"
-    "@swc/core-win32-ia32-msvc": "npm:1.7.18"
-    "@swc/core-win32-x64-msvc": "npm:1.7.18"
+    "@swc/core-darwin-arm64": "npm:1.7.21"
+    "@swc/core-darwin-x64": "npm:1.7.21"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.7.21"
+    "@swc/core-linux-arm64-gnu": "npm:1.7.21"
+    "@swc/core-linux-arm64-musl": "npm:1.7.21"
+    "@swc/core-linux-x64-gnu": "npm:1.7.21"
+    "@swc/core-linux-x64-musl": "npm:1.7.21"
+    "@swc/core-win32-arm64-msvc": "npm:1.7.21"
+    "@swc/core-win32-ia32-msvc": "npm:1.7.21"
+    "@swc/core-win32-x64-msvc": "npm:1.7.21"
     "@swc/counter": "npm:^0.1.3"
     "@swc/types": "npm:^0.1.12"
   peerDependencies:
@@ -1413,7 +1413,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10c0/4b81421353d2405eacb08e383e57e15cb8852b90f0b1acd799263d9073fb0e595a2d4878547ef82d95986ea39e49a7d48fee34d5b70e9b3fc7c99e64df9bc922
+  checksum: 10c0/b0fbf4a7d22313e34f7653267026b179a2de7946c3b65ee4bf91b872213656b614138369fecd582271565d41d64d9094ad0a0a275d01c2834eba9245fb84c41c
   languageName: node
   linkType: hard
 
@@ -3670,11 +3670,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.5.0
-  resolution: "@types/node@npm:22.5.0"
+  version: 22.5.1
+  resolution: "@types/node@npm:22.5.1"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/45aa75c5e71645fac42dced4eff7f197c3fdfff6e8a9fdacd0eb2e748ff21ee70ffb73982f068a58e8d73b2c088a63613142c125236cdcf3c072ea97eada1559
+  checksum: 10c0/35373176d8a1d4e16004a1ed303e68d39e4c6341024dc056f2577982df98c1a045a6b677f12ed557796f09bbf7d621f428f6874cc37ed28f7b336fa604b5f6a6
   languageName: node
   linkType: hard
 
@@ -4343,8 +4343,8 @@ __metadata:
     "@deck.gl-community/editable-layers": "npm:^9.0.2"
     "@deck.gl-community/layers": "npm:^9.0.2"
     "@eslint/js": "npm:^9.9.0"
-    "@luma.gl/engine": "npm:^9.0.25"
-    "@luma.gl/webgl": "npm:^9.0.25"
+    "@luma.gl/engine": "npm:^9.0.26"
+    "@luma.gl/webgl": "npm:^9.0.26"
     "@turf/turf": "npm:^7.1.0"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
