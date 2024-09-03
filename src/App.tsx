@@ -42,11 +42,11 @@ class PatchEditableGeoJsonLayer extends EditableGeoJsonLayer {
   }
 }
 
-function FeaturePanel({ 
+function FeaturePanel({
   features, setFeatures,
   setSelectedFeatureIDs, selectedFeatureIDs
-}: 
-  { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void, 
+}:
+  { features: FeatureCollection, setFeatures: (features: FeatureCollection) => void,
     // selectedFeatureIndexes: number[], setSelectedFeatureIndexes: (indexes: number[]) => void,
     selectedFeatureIDs: (string | number)[], setSelectedFeatureIDs: (ids: (string | number)[]) => void,
     data: { x: Float32Array, y: Float32Array, size: Float32Array, length: number },
@@ -56,16 +56,12 @@ function FeaturePanel({
   return (
     <div className='feature-panel'>
       <div>Features: {numFeatures}</div>
-      {features.features.map((feature, i) => (
-        <div key={feature.id || i} className={selectedFeatureIDs.includes(feature.id!) ? 'active' : ''}
-        onMouseOver={() => setSelectedFeatureIDs([feature.id!])}
+      {features.features.map((feature, i) => feature.id && (
+        <div key={feature.id} className={selectedFeatureIDs.includes(feature.id) ? 'active' : ''}
+        onMouseOver={() => feature.id && setSelectedFeatureIDs([feature.id])}
         onMouseOut={() => setSelectedFeatureIDs([])}
-        onClick={() => {
-          // const points = feature.geometry.coordinates[0] as [number, number][];
-          // const t = Date.now();
-          // setSelectedDataIndices(filterPoly(points, data.x, data.y));
-          // console.log('filterPoly', points.length, Date.now()-t);
-        }}
+        onFocus={() => feature.id && setSelectedFeatureIDs([feature.id])}
+        onBlur={() => setSelectedFeatureIDs([])}
         >
           {feature.geometry.type}
           <input type='checkbox' checked={feature.properties?.visible} onChange={(e) => {
@@ -88,7 +84,7 @@ function FeaturePanel({
   );
 }
 
-let MASK_ONLY = true;
+const MASK_ONLY = true;
 
 export default function GeometryEditor() {
   //35621990 - cells in adenoma dataset
@@ -104,12 +100,12 @@ export default function GeometryEditor() {
     const size = new Float32Array(n).map(() => 5+Math.random()*10);
     // return new Array(447042).fill(0).map(() => ({ position: p(), size: 5+Math.random()*10 }));
     return { x, y, size, length: n };
-  }, [n]);
+  }, []);
 
   const [features, setFeaturesX] = useState<FeatureCollection>({
     type: 'FeatureCollection',
     features: []
-  });  
+  });
   const [mode, setMode] = useState<DrawModes>(() => new DrawPolygonByDraggingMode());
   // const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<number[]>([]);
   const [selectedFeatureIDs, setSelectedFeatureIDs] = useState<(string | number)[]>([]);
@@ -122,7 +118,7 @@ export default function GeometryEditor() {
   }, [features, selectedFeatureIDs]);
   const [selectedDataIndices, setSelectedDataIndices] = useState<Uint32Array>(new Uint32Array(0));
   const [featureDataIndexMap, setFeatureDataIndexMap] = useState<Map<number, Uint32Array>>(new Map());
-  
+
   const setFeatures = useCallback((features: FeatureCollection, updatedIndexes?: number[]) => {
     setFeaturesX(features);
     if (MASK_ONLY) return;
@@ -133,7 +129,7 @@ export default function GeometryEditor() {
         const indices = filterPoly(points, data.x, data.y);
         //XXX i is liable to be different if we've removed features, so we should probably use the feature id instead
         newMap.set(i, indices);
-      }  
+      }
       const newIndices = aggregateIndices(features, newMap, n);
       setFeatureDataIndexMap(newMap);
       setSelectedDataIndices(newIndices);
@@ -151,9 +147,9 @@ export default function GeometryEditor() {
       setSelectedDataIndices(newIndices);
       setFeatureDataIndexMap(newMap);
     }
-  }, [n, data.x, data.y, featureDataIndexMap]);  
+  }, [n, data.x, data.y, featureDataIndexMap]);
 
-  
+
   const editLayer = new PatchEditableGeoJsonLayer({
     data: features,
     mode,
@@ -175,15 +171,15 @@ export default function GeometryEditor() {
       // the only indices that are valid are those that relate to the features themselves...
       // also, the type of pickingInfo doesn't have a featureType property, so we cast it to any for now
       if ((pickingInfo as any).featureType === 'points') return;
-      
+
       // -- try to avoid selecting invisible features
       // this doesn't work very well because it won't override the underlying picking logic, can't see how to make certain features unselectable
       // ** maybe what we need to consider is having separate FeatureCollections for different types of features,
       // ** and then we can have a separate non-editable GeoJsonLayer for the 'invisible' / hidden features
       // if (features.features[pickingInfo.index]?.properties?.visible === false) return;
-      
-      // this logic is still not perfect in that if two objects overlap and we try to move the mouse from one to the other, 
-      // the first one will not remain selected so the point we were aiming for will disappear... 
+
+      // this logic is still not perfect in that if two objects overlap and we try to move the mouse from one to the other,
+      // the first one will not remain selected so the point we were aiming for will disappear...
       // we could maybe fix this by only updating the selectedFeatureIndexes when we go out of the bounds of the current feature?
       const id = features.features[pickingInfo.index]?.id;
       setSelectedFeatureIDs(id ? [id] : []);
@@ -240,7 +236,7 @@ export default function GeometryEditor() {
       maskId: 'edit',
       extensions: [new MaskExtension({ id: 'mask' })],
     });
-  }, [selectedDataIndices, data]);
+  }, [data]);
   const controlStyle = useMemo(() => ({
     zIndex: 1,
     position: 'absolute',
@@ -256,19 +252,19 @@ export default function GeometryEditor() {
           doubleClickZoom: false
         }}
         layers={[
-          scatterplotLayer, 
+          scatterplotLayer,
           highlightLayer,
-          editLayer, 
+          editLayer,
         ]}
         getCursor={editLayer.getCursor.bind(editLayer)}
-        // -- as soon as any deviceProps are set (even {}), we get errors 
+        // -- as soon as any deviceProps are set (even {}), we get errors
         //"deck: Cannot access 'WebGPUDevice' before initialization undefined"
-        // deviceProps={{ 
+        // deviceProps={{
         //   // spector: true, debug: true
         // }}
         // drawPickingColors={true}
       >
-        <StaticMap 
+        <StaticMap
         // accessToken={accessToken}
         mapboxAccessToken={accessToken}
         collectResourceTiming={false}
@@ -278,35 +274,38 @@ export default function GeometryEditor() {
 
       <div className='controls' style={controlStyle}>
         <button
+          type='button'
           className={`button ${mode instanceof DrawLineStringMode ? 'active' : ''}`}
           onClick={() => setMode(() => new DrawLineStringMode())}
         >
           Line
         </button>
         <button
+          type='button'
           className={`button ${drawPoly ? 'active' : ''}`}
           onClick={() => setMode(() => new DrawPolygonMode())}
         >
           Polygon
         </button>
         <button
+          type='button'
           className={`button ${mode instanceof DrawPolygonByDraggingMode ? 'active' : ''}`}
           onClick={() => setMode(() => new DrawPolygonByDraggingMode())}
         >
           Lasso
         </button>
         <button
+          type='button'
           className={`button ${mode instanceof CompositeMode ? 'active' : ''}`}
           onClick={() => setMode(() => new CompositeMode([
             // new TransformMode(),
             new TranslateMode(),
-            new ModifyMode(), 
+            new ModifyMode(),
           ]))}
         >
           Edit
         </button>
       </div>
-      {/* <FeaturePanel features={features} selectedFeatureIndexes={selectedFeatureIndexes} setSelectedFeatureIndexes={setSelectedFeatureIndexes} /> */}
       <FeaturePanel {...{features, setFeatures, selectedFeatureIDs, setSelectedFeatureIDs, data, selectedDataIndices, setSelectedDataIndices}} />
     </>
   );
