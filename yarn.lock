@@ -198,6 +198,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@deck.gl/extensions@npm:^9.0.27":
+  version: 9.0.28
+  resolution: "@deck.gl/extensions@npm:9.0.28"
+  dependencies:
+    "@luma.gl/constants": "npm:^9.0.15"
+    "@luma.gl/shadertools": "npm:^9.0.15"
+    "@math.gl/core": "npm:^4.0.0"
+  peerDependencies:
+    "@deck.gl/core": ^9.0.0
+    "@luma.gl/core": ^9.0.0
+    "@luma.gl/engine": ^9.0.0
+  checksum: 10c0/de8c5c3590184db0a603487d77477e396867fa021c0b26c4a7e7a72228bb739151d192a6a9d304d57ea2f18617bac18730ca500aeed16afb0c069fe15639deb9
+  languageName: node
+  linkType: hard
+
 "@deck.gl/geo-layers@npm:9.0.27, @deck.gl/geo-layers@npm:^9.0.12":
   version: 9.0.27
   resolution: "@deck.gl/geo-layers@npm:9.0.27"
@@ -227,6 +242,38 @@ __metadata:
     "@luma.gl/core": ^9.0.0
     "@luma.gl/engine": ^9.0.0
   checksum: 10c0/fcfa4680418350885619d2a76cb3d3040d300e39259c3beb4f196f53f1f3f6762d708aa48c25124aa329cb0845556295a36462b04440bab1136d0e05c01eacb6
+  languageName: node
+  linkType: hard
+
+"@deck.gl/geo-layers@npm:^9.0.27":
+  version: 9.0.28
+  resolution: "@deck.gl/geo-layers@npm:9.0.28"
+  dependencies:
+    "@loaders.gl/3d-tiles": "npm:^4.2.0"
+    "@loaders.gl/gis": "npm:^4.2.0"
+    "@loaders.gl/loader-utils": "npm:^4.2.0"
+    "@loaders.gl/mvt": "npm:^4.2.0"
+    "@loaders.gl/schema": "npm:^4.2.0"
+    "@loaders.gl/terrain": "npm:^4.2.0"
+    "@loaders.gl/tiles": "npm:^4.2.0"
+    "@loaders.gl/wms": "npm:^4.2.0"
+    "@luma.gl/gltf": "npm:^9.0.15"
+    "@luma.gl/shadertools": "npm:^9.0.15"
+    "@math.gl/core": "npm:^4.0.0"
+    "@math.gl/culling": "npm:^4.0.0"
+    "@math.gl/web-mercator": "npm:^4.0.0"
+    "@types/geojson": "npm:^7946.0.8"
+    h3-js: "npm:^4.1.0"
+    long: "npm:^3.2.0"
+  peerDependencies:
+    "@deck.gl/core": ^9.0.0
+    "@deck.gl/extensions": ^9.0.0
+    "@deck.gl/layers": ^9.0.0
+    "@deck.gl/mesh-layers": ^9.0.0
+    "@loaders.gl/core": ^4.2.0
+    "@luma.gl/core": ^9.0.0
+    "@luma.gl/engine": ^9.0.0
+  checksum: 10c0/e66549a2ccc0068ec1a2b76ee878c8ea0b17b1f6bfd87e0517a8589000110e1543d8c9511869834d3dd9e3c72b7c28326f189d3c09cfd769a7ab5cf581a733e1
   languageName: node
   linkType: hard
 
@@ -4342,6 +4389,8 @@ __metadata:
   dependencies:
     "@deck.gl-community/editable-layers": "npm:^9.0.2"
     "@deck.gl-community/layers": "npm:^9.0.2"
+    "@deck.gl/extensions": "npm:^9.0.27"
+    "@deck.gl/geo-layers": "npm:^9.0.27"
     "@eslint/js": "npm:^9.9.0"
     "@luma.gl/engine": "npm:^9.0.26"
     "@luma.gl/webgl": "npm:^9.0.26"

@@ -12,6 +12,8 @@
   "dependencies": {
     "@deck.gl-community/editable-layers": "^9.0.2",
     "@deck.gl-community/layers": "^9.0.2",
+    "@deck.gl/extensions": "^9.0.27",
+    "@deck.gl/geo-layers": "^9.0.27",
     "@luma.gl/engine": "^9.0.26",
     "@luma.gl/webgl": "^9.0.26",
     "@turf/turf": "^7.1.0",
