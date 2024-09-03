@@ -183,7 +183,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/extensions@npm:9.0.28, @deck.gl/extensions@npm:^9.0.12, @deck.gl/extensions@npm:^9.0.28":
+"@deck.gl/extensions@npm:9.0.28, @deck.gl/extensions@npm:^9.0.12, @deck.gl/extensions@npm:^9.0.27":
   version: 9.0.28
   resolution: "@deck.gl/extensions@npm:9.0.28"
   dependencies:
@@ -198,7 +198,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/geo-layers@npm:9.0.28, @deck.gl/geo-layers@npm:^9.0.12, @deck.gl/geo-layers@npm:^9.0.28":
+"@deck.gl/geo-layers@npm:9.0.28, @deck.gl/geo-layers@npm:^9.0.12, @deck.gl/geo-layers@npm:^9.0.27":
   version: 9.0.28
   resolution: "@deck.gl/geo-layers@npm:9.0.28"
   dependencies:
@@ -4342,8 +4342,8 @@ __metadata:
   dependencies:
     "@deck.gl-community/editable-layers": "npm:^9.0.2"
     "@deck.gl-community/layers": "npm:^9.0.2"
-    "@deck.gl/extensions": "npm:^9.0.28"
-    "@deck.gl/geo-layers": "npm:^9.0.28"
+    "@deck.gl/extensions": "npm:^9.0.27"
+    "@deck.gl/geo-layers": "npm:^9.0.27"
     "@eslint/js": "npm:^9.9.0"
     "@luma.gl/engine": "npm:^9.0.27"
     "@luma.gl/webgl": "npm:^9.0.27"
@@ -4352,7 +4352,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.0"
     "@types/uuid": "npm:^10"
     "@vitejs/plugin-react-swc": "npm:^3.5.0"
-    deck.gl: "npm:^9.0.28"
+    deck.gl: "npm:^9.0.27"
     dotenv: "npm:^16.4.5"
     eslint: "npm:^9.9.0"
     eslint-plugin-react-hooks: "npm:^5.1.0-rc.0"
@@ -4369,7 +4369,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"deck.gl@npm:^9.0.28":
+"deck.gl@npm:^9.0.27":
   version: 9.0.28
   resolution: "deck.gl@npm:9.0.28"
   dependencies:
