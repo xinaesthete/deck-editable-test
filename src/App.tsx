@@ -147,7 +147,7 @@ export default function GeometryEditor() {
       setSelectedDataIndices(newIndices);
       setFeatureDataIndexMap(newMap);
     }
-  }, [n, data.x, data.y, featureDataIndexMap]);
+  }, [data.x, data.y, featureDataIndexMap]);
 
 
   const editLayer = new PatchEditableGeoJsonLayer({
@@ -170,6 +170,7 @@ export default function GeometryEditor() {
       // because when we hover over a point, the index is a value that relates to points within the feature
       // the only indices that are valid are those that relate to the features themselves...
       // also, the type of pickingInfo doesn't have a featureType property, so we cast it to any for now
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       if ((pickingInfo as any).featureType === 'points') return;
 
       // -- try to avoid selecting invisible features
