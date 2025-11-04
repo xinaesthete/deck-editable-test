@@ -19,6 +19,7 @@ import { aggregateIndices, filterPoly } from './utils';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import StaticMap from 'react-map-gl';
 import { v4 as uuid } from 'uuid';
+import { ScatterDensityExtension } from './extension';
 
 const INITIAL_VIEW_STATE = {
   longitude: 7.319726,
@@ -28,7 +29,7 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 };
 // console.log('supported luma devices', luma.getSupportedDevices());
-const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+const accessToken = "";//import.meta.env.VITE_MAPBOX_TOKEN;
 
 type DrawModes = DrawPolygonMode | DrawLineStringMode | DrawPolygonByDraggingMode | CompositeMode;
 //EditableGeoJsonLayer extends EditableLayer<FeatureCollection, EditableGeojsonLayerProps<FeatureCollection>>
@@ -216,10 +217,11 @@ export default function GeometryEditor() {
         target[1] = data.y[index];
         return target as [number, number]; //nb I think deck.gl types could be improved here, the type of `target` should be compatible with the return type
       },
-      getRadius: (_, {index}) => data.size[index] * 0.5,
+      getRadius: (_, {index}) => data.size[index] * 5,
       getFillColor: [255, 255, 255],
       opacity: 0.1,
       pickable: false, // even though these are non-pickable, they still incur a performance cost mostly to do with the number of points & readPixels
+      extensions: [new ScatterDensityExtension()],
     });
   }, [data]);
   const highlightLayer = useMemo(() => {
